@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile — Hodophile{% endblock %}
+{% block content %}
+<div class="page-wrap" style="max-width:600px">
+  <div class="card reveal">
+    <h1 class="card-title">Edit Profile</h1>
+    <p class="card-sub">Update your traveller details</p>
+    <form method="POST" action="{{ url_for('edit_profile') }}" enctype="multipart/form-data" class="edit-form">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" value="{{ user['name'] }}" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" value="{{ user['email'] }}" required>
+      </div>
+      <div class="form-group">
+        <label for="new_password">New Password <span class="label-hint">(leave blank to keep current)</span></label>
+        <div class="input-icon-wrap">
+          <input type="password" id="new_password" name="new_password" placeholder="New password (min 6 characters)" autocomplete="new-password">
+          <button type="button" class="toggle-pass" onclick="togglePassword('new_password')">👁</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="photo">Profile Photo</label>
+        {% if user['photo'] %}
+          <div class="current-photo">
+            <img src="{{ url_for('profile_image', filename=user['photo']) }}" alt="Current photo">
+            <span>Current photo</span>
+          </div>
+        {% endif %}
+        <input type="file" id="photo" name="photo" accept="image/*">
+        <div class="field-hint">PNG, JPG, GIF up to 10MB</div>
+      </div>
+      <div class="form-row">
+        <button type="submit" class="btn btn-gold">Save Changes ✓</button>
+        <a href="{{ url_for('profile') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

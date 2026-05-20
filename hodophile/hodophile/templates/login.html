@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Sign In — Hodophile{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card reveal">
+    <div class="auth-logo">✦ Hodophile</div>
+    <h1 class="auth-title">Welcome Back</h1>
+    <p class="auth-sub">Sign in to continue your journey</p>
+    <form method="POST" action="{{ url_for('login') }}" class="auth-form" id="loginForm">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-icon-wrap">
+          <input type="password" id="password" name="password" placeholder="Your password" required autocomplete="current-password">
+          <button type="button" class="toggle-pass" onclick="togglePassword('password')">👁</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-gold btn-full">Sign In →</button>
+    </form>
+    <div class="auth-divider"><span>or</span></div>
+    <div class="auth-switch">
+      Don't have an account? <a href="{{ url_for('signup') }}">Create one free ✦</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

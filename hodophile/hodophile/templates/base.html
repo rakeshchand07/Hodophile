@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Hodophile — AI Travel Planner{% endblock %}</title>
+  <meta name="description" content="Plan your dream journey with AI-powered itineraries, smart budgets, weather insights and travel memories.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-container" id="flashContainer">
+      {% for cat, msg in messages %}
+        <div class="flash flash-{{ cat }}">
+          <span>{% if cat=='success' %}✓{% elif cat=='error' %}✕{% elif cat=='warning' %}⚠{% else %}ℹ{% endif %}</span>
+          {{ msg }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- Navigation -->
+<nav class="nav" id="mainNav">
+  <a class="nav-logo" href="{{ url_for('index') }}">
+    <span class="logo-dot"></span>Hodophile
+  </a>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+  <div class="nav-links" id="navLinks">
+    <a class="nav-link {% if request.endpoint=='index' %}active{% endif %}" href="{{ url_for('index') }}">Home</a>
+    {% if user %}
+      <a class="nav-link {% if request.endpoint=='plan_trip' %}active{% endif %}" href="{{ url_for('plan_trip') }}">Plan Trip</a>
+      <a class="nav-link {% if request.endpoint=='saved_trips' %}active{% endif %}" href="{{ url_for('saved_trips') }}">Saved Trips</a>
+    {% endif %}
+    <a class="nav-link {% if request.endpoint=='chatbot' %}active{% endif %}" href="{{ url_for('chatbot') }}">AI Chat</a>
+    <a class="nav-link {% if request.endpoint=='weather' %}active{% endif %}" href="{{ url_for('weather') }}">Weather</a>
+    {% if user %}
+      <a class="nav-link {% if request.endpoint=='memories' %}active{% endif %}" href="{{ url_for('memories') }}">Memories</a>
+    {% endif %}
+  </div>
+  <div class="nav-right">
+    <button class="theme-toggle" id="themeBtn" title="Toggle dark/light mode" aria-label="Toggle theme">☀</button>
+    {% if user %}
+      <a class="btn btn-ghost btn-sm" href="{{ url_for('profile') }}">{{ user['name'].split()[0] }} ↗</a>
+      <a class="btn btn-neon btn-sm" href="{{ url_for('logout') }}">Sign Out</a>
+    {% else %}
+      <a class="btn btn-ghost btn-sm" href="{{ url_for('login') }}">Sign In</a>
+      <a class="btn btn-gold btn-sm" href="{{ url_for('signup') }}">Get Started ✦</a>
+    {% endif %}
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main>{% block content %}{% endblock %}</main>
+
+<!-- Floating AI Assistant -->
+<div class="ai-float" id="aiFloat">
+  <div class="ai-tip" id="aiTip">Hi! Ask me anything ✈</div>
+  <a href="{{ url_for('chatbot') }}" class="ai-face" aria-label="Open AI Chat">
+    <div class="ai-eyes">
+      <div class="ai-eye"></div>
+      <div class="ai-eye"></div>
+    </div>
+    <div class="ai-smile"></div>
+  </a>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-logo">✦ Hodophile</div>
+    <div class="footer-tagline">Crafting dream journeys with AI intelligence</div>
+    <div class="footer-links">
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('chatbot') }}">AI Chat</a>
+      <a href="{{ url_for('weather') }}">Weather</a>
+      {% if user %}
+        <a href="{{ url_for('plan_trip') }}">Plan Trip</a>
+        <a href="{{ url_for('memories') }}">Memories</a>
+      {% else %}
+        <a href="{{ url_for('signup') }}">Sign Up</a>
+        <a href="{{ url_for('login') }}">Login</a>
+      {% endif %}
+    </div>
+    <div class="footer-copy">© {{ current_year }} Hodophile. Built with ✦ and AI.</div>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}Weather — Hodophile{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+  <div class="card reveal visible">
+    <h1 class="card-title">Weather Intelligence</h1>
+    <p class="card-sub">Real-time conditions to plan the perfect trip timing</p>
+
+    <div class="weather-search">
+      <input
+        type="text"
+        id="cityInput"
+        placeholder="Enter city name (e.g. Bali, Paris, Puri)..."
+        onkeydown="if(event.key==='Enter')fetchWeather()"
+      >
+      <button class="btn btn-neon" onclick="fetchWeather()">Check →</button>
+    </div>
+
+    <div class="city-chips">
+      <button class="chip" onclick="quickCity('Mumbai')">Mumbai</button>
+      <button class="chip" onclick="quickCity('Bali')">Bali</button>
+      <button class="chip" onclick="quickCity('Paris')">Paris</button>
+      <button class="chip" onclick="quickCity('Goa')">Goa</button>
+      <button class="chip" onclick="quickCity('Manali')">Manali</button>
+      <button class="chip" onclick="quickCity('Tokyo')">Tokyo</button>
+    </div>
+  </div>
+
+  <div id="weatherResult"></div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<div id="serverData" data-city="{{ request.args.get('city', '') }}" hidden></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const serverData = document.getElementById("serverData");
+  const cityFromServer = serverData ? serverData.dataset.city : "";
+
+  if (cityFromServer) {
+    document.getElementById("cityInput").value = cityFromServer;
+    fetchWeather();
+  }
+});
+
+async function fetchWeather() {
+  const city = document.getElementById("cityInput").value.trim();
+  if (!city) return;
+
+  document.getElementById("weatherResult").innerHTML =
+    '<div class="loading-card"><div class="mini-loader"></div><p>Checking weather for ' +
+    city + '...</p></div>';
+
+  try {
+    const resp = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
+    const data = await resp.json();
+
+    if (data.error) {
+      document.getElementById("weatherResult").innerHTML =
+        `<div class="card"><div class="error-state">⚠ ${data.error}</div></div>`;
+      return;
+    }
+
+    const iconUrl = `https://openweathermap.org/img/wn/${data.icon}@2x.png`;
+    const mapUrl = `https://www.google.com/maps/search/${encodeURIComponent(city)}`;
+
+    const advice =
+      data.temp > 35
+        ? "🌡 It's very hot! Pack light cotton clothes, stay hydrated and avoid midday outdoor activities."
+        : data.temp > 25
+        ? "☀️ Warm and pleasant. Pack sunscreen SPF 50+ and comfortable walking shoes."
+        : data.temp > 15
+        ? "🌤 Mild weather — perfect for sightseeing! A light jacket for evenings is recommended."
+        : data.temp > 5
+        ? "🧥 Chilly! Pack warm layers, a good jacket and thermal underlayers."
+        : "❄️ Very cold! Heavy winter gear, thermal clothing and waterproof boots essential.";
+
+    document.getElementById("weatherResult").innerHTML = `
+      <div class="card weather-card reveal visible">
+        <div class="wx-header">
+          <div>
+            <div class="wx-city">${data.city}${data.country ? ", " + data.country : ""}</div>
+            <div class="wx-desc">${data.description}</div>
+          </div>
+
+          <img src="${iconUrl}" alt="${data.description}" class="wx-icon-img">
+        </div>
+
+        <div class="wx-temp">${data.temp}°C</div>
+
+        <div class="wx-grid">
+          <div class="wx-item">
+            <div class="wx-val">${data.feels_like}°C</div>
+            <div class="wx-lbl">Feels Like</div>
+          </div>
+
+          <div class="wx-item">
+            <div class="wx-val">${data.humidity}%</div>
+            <div class="wx-lbl">Humidity</div>
+          </div>
+
+          <div class="wx-item">
+            <div class="wx-val">${data.wind_speed} km/h</div>
+            <div class="wx-lbl">Wind Speed</div>
+          </div>
+
+          ${
+            data.visibility
+              ? `<div class="wx-item">
+                  <div class="wx-val">${data.visibility} km</div>
+                  <div class="wx-lbl">Visibility</div>
+                </div>`
+              : ""
+          }
+        </div>
+
+        <div class="wx-advice">${advice}</div>
+
+        ${
+          data.fallback
+            ? '<div class="wx-fallback">⚠ Showing estimated data</div>'
+            : ""
+        }
+
+        <a href="${mapUrl}" target="_blank" class="map-btn" style="margin-top:1rem;display:inline-flex">
+          🗺 Explore ${data.city}
+        </a>
+      </div>
+    `;
+  } catch (e) {
+    document.getElementById("weatherResult").innerHTML =
+      '<div class="card"><div class="error-state">⚠ Could not fetch weather data.</div></div>';
+  }
+}
+
+function quickCity(city) {
+  document.getElementById("cityInput").value = city;
+  fetchWeather();
+}
+</script>
+{% endblock %}

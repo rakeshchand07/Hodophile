@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}AI Travel Chat — Hodophile{% endblock %}
+{% block content %}
+<div class="chat-page">
+  <div class="chat-header">
+    <div class="chat-avatar">✦</div>
+    <div class="chat-header-info">
+      <div class="chat-name">Hodophile AI</div>
+      <div class="chat-status">● Online · Ready to plan your next adventure</div>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="clearChat()">🗑 Clear Chat</button>
+  </div>
+
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg ai">
+      <div class="msg-avatar">✦</div>
+      <div class="msg-bubble">
+        Namaste! I'm your Hodophile AI travel companion 🌏<br><br>
+        I can help you plan trips, find hidden gems, suggest restaurants, create packing lists, share safety tips and so much more.<br><br>
+        Where shall we explore today? ✈
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-chips">
+    <button class="chip" onclick="sendChip('Best places in India for summer travel?')">🌞 Summer spots</button>
+    <button class="chip" onclick="sendChip('Plan a budget trip under ₹8000 in India')">💰 Budget trip</button>
+    <button class="chip" onclick="sendChip('Give me a complete packing list for a beach vacation')">🎒 Beach packing</button>
+    <button class="chip" onclick="sendChip('Best romantic honeymoon destinations in India')">💑 Honeymoon ideas</button>
+    <button class="chip" onclick="sendChip('Solo travel safety tips for women in India')">🌸 Solo travel</button>
+    <button class="chip" onclick="sendChip('Hidden gems in Odisha, India')">💎 Hidden gems</button>
+  </div>
+
+  <div class="chat-input-area">
+    <textarea class="chat-input" id="chatInput" placeholder="Ask anything about travel..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    <button class="btn btn-neon chat-send-btn" onclick="sendMessage()" id="sendBtn">Send →</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = ''; autoResize(input);
+  appendMessage('user', msg);
+  const typing = appendTyping();
+  document.getElementById('sendBtn').disabled = true;
+  try {
+    const resp = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg })
+    });
+    const data = await resp.json();
+    typing.remove();
+    appendMessage('ai', data.reply || 'Sorry, I could not process that. Please try again.');
+  } catch(e) {
+    typing.remove();
+    appendMessage('ai', '⚠ Connection error. Please check your internet and try again.');
+  }
+  document.getElementById('sendBtn').disabled = false;
+}
+
+function appendMessage(role, text) {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = `<div class="msg-avatar">${role === 'ai' ? '✦' : '👤'}</div>
+    <div class="msg-bubble">${text.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+
+function appendTyping() {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.innerHTML = `<div class="msg-avatar">✦</div>
+    <div class="typing-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+
+function sendChip(text) {
+  document.getElementById('chatInput').value = text;
+  sendMessage();
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function clearChat() {
+  const container = document.getElementById('chatMessages');
+  container.innerHTML = `<div class="msg ai">
+    <div class="msg-avatar">✦</div>
+    <div class="msg-bubble">Chat cleared! Ready for a fresh start. Where shall we explore next? 🌏</div>
+  </div>`;
+}
+</script>
+{% endblock %}

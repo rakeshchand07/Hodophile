@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Plan a Trip — Hodophile{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <div class="card reveal">
+    <h1 class="card-title">Plan Your Journey</h1>
+    <p class="card-sub">Tell us your dream — our AI crafts the perfect itinerary</p>
+    <form method="POST" action="{{ url_for('plan_trip') }}" id="planForm">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="destination">Destination <span class="req">*</span></label>
+          <input type="text" id="destination" name="destination" placeholder="e.g. Bali, Puri, Paris, Ladakh" required autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="days">Number of Days <span class="req">*</span></label>
+          <input type="number" id="days" name="days" placeholder="5" min="1" max="30" value="5" required>
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="budget">Total Budget (₹) <span class="req">*</span></label>
+          <input type="number" id="budget" name="budget" placeholder="50000" min="1000" value="50000" required>
+          <div class="field-hint" id="budgetHint">≈ ₹10,000 per day per person</div>
+        </div>
+        <div class="form-group">
+          <label for="travelers">Number of Travelers <span class="req">*</span></label>
+          <input type="number" id="travelers" name="travelers" placeholder="2" min="1" max="20" value="2" required>
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="vibe">Travel Style</label>
+          <select id="vibe" name="vibe">
+            <option value="Adventure">🏔 Adventure</option>
+            <option value="Relaxation">🌊 Relaxation</option>
+            <option value="Luxury">💎 Luxury</option>
+            <option value="Family">👨‍👩‍👧 Family</option>
+            <option value="Solo">🎒 Solo</option>
+            <option value="Cultural">🏛 Cultural</option>
+            <option value="Romantic">💑 Romantic</option>
+            <option value="Budget">💰 Budget</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="month">Month of Travel</label>
+          <select id="month" name="month">
+            <option>January</option><option>February</option><option>March</option>
+            <option>April</option><option>May</option><option>June</option>
+            <option>July</option><option>August</option><option>September</option>
+            <option>October</option><option>November</option>
+            <option selected>December</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-gold btn-full btn-lg" id="planBtn">
+        <span id="planBtnText">✦ Generate AI Journey Plan</span>
+        <span id="planBtnLoader" style="display:none">⏳ Generating your plan...</span>
+      </button>
+    </form>
+  </div>
+
+  <!-- Travel Style Info Cards -->
+  <div class="style-info reveal">
+    <div class="style-card" data-vibe="Adventure"><span>🏔</span><strong>Adventure</strong><p>Treks, rafting, camping, extreme sports</p></div>
+    <div class="style-card" data-vibe="Relaxation"><span>🌊</span><strong>Relaxation</strong><p>Beaches, spas, slow travel, nature retreats</p></div>
+    <div class="style-card" data-vibe="Luxury"><span>💎</span><strong>Luxury</strong><p>5-star stays, fine dining, premium experiences</p></div>
+    <div class="style-card" data-vibe="Cultural"><span>🏛</span><strong>Cultural</strong><p>Heritage, museums, local experiences</p></div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+document.getElementById('planForm').addEventListener('submit', function() {
+  document.getElementById('planBtnText').style.display = 'none';
+  document.getElementById('planBtnLoader').style.display = 'inline';
+  document.getElementById('planBtn').disabled = true;
+});
+// Live budget hint
+const budgetEl = document.getElementById('budget');
+const daysEl = document.getElementById('days');
+const travelersEl = document.getElementById('travelers');
+function updateBudgetHint() {
+  const b = parseFloat(budgetEl.value) || 0;
+  const d = parseInt(daysEl.value) || 1;
+  const t = parseInt(travelersEl.value) || 1;
+  const perDay = b / d;
+  const perPersonDay = b / d / t;
+  document.getElementById('budgetHint').textContent =
+    `≈ ₹${perDay.toLocaleString('en-IN', {maximumFractionDigits:0})} per day · ₹${perPersonDay.toLocaleString('en-IN', {maximumFractionDigits:0})} per person/day`;
+}
+[budgetEl, daysEl, travelersEl].forEach(el => el.addEventListener('input', updateBudgetHint));
+updateBudgetHint();
+// Style card clicks
+document.querySelectorAll('.style-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.getElementById('vibe').value = card.dataset.vibe;
+    document.querySelectorAll('.style-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block title %}Hodophile — Plan Your Dream Journey With AI{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="hero" id="hero">
+  <canvas class="hero-canvas" id="heroCanvas"></canvas>
+  <div class="hero-orbs">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+  <div class="hero-content reveal">
+    <div class="hero-eyebrow">✦ AI-Powered Travel Intelligence</div>
+    <h1 class="hero-title">Plan Your <em>Dream Journey</em><br>With Intelligence</h1>
+    <p class="hero-sub">Hodophile blends the art of wanderlust with AI brilliance — crafting bespoke itineraries, smart budgets, real-time weather, and cinematic experiences tailored just for you.</p>
+    <div class="hero-btns">
+      {% if user %}
+        <a class="btn btn-gold btn-lg" href="{{ url_for('plan_trip') }}">✦ Plan My Journey</a>
+        <a class="btn btn-ghost btn-lg" href="{{ url_for('chatbot') }}">Talk to AI →</a>
+      {% else %}
+        <a class="btn btn-gold btn-lg" href="{{ url_for('signup') }}">✦ Get Started Free</a>
+        <a class="btn btn-ghost btn-lg" href="{{ url_for('chatbot') }}">Try AI Chat →</a>
+      {% endif %}
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-arrow"></div>
+      <span>Discover</span>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card reveal">
+        <div class="stat-num" data-target="12847">0</div>
+        <div class="stat-label">✦ Trips Planned</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-num">98%</div>
+        <div class="stat-label">✦ Happy Travelers</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-num">AI</div>
+        <div class="stat-label">✦ Smart Engine</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">✦ AI Support</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section" id="features">
+  <div class="container">
+    <div class="sec-header reveal">
+      <div class="sec-label">What We Offer</div>
+      <h2 class="sec-title">Travel <em>Reimagined</em><br>In Eight Dimensions</h2>
+      <p class="sec-sub">Eight premium tools that transform how you discover, plan, explore and remember your journeys.</p>
+    </div>
+    <div class="features-grid">
+      <a class="feature-card reveal" href="{{ url_for('plan_trip') if user else url_for('signup') }}">
+        <span class="fc-icon">🗺️</span>
+        <div class="fc-title">AI Planner</div>
+        <div class="fc-desc">Full day-by-day itineraries powered by Gemini AI with real place names and insider tips.</div>
+        <div class="fc-arrow">→</div>
+      </a>
+      <a class="feature-card reveal" href="{{ url_for('plan_trip') if user else url_for('signup') }}">
+        <span class="fc-icon">💰</span>
+        <div class="fc-title">Budget Smart</div>
+        <div class="fc-desc">Intelligent budget breakdowns across stay, food, transport and activities for your style.</div>
+        <div class="fc-arrow">→</div>
+      </a>
+      <a class="feature-card reveal" href="{{ url_for('memories') if user else url_for('signup') }}">
+        <span class="fc-icon">📸</span>
+        <div class="fc-title">Memories</div>
+        <div class="fc-desc">Upload and curate your travel photographs into a beautiful gallery that tells your story.</div>
+        <div class="fc-arrow">→</div>
+      </a>
+      <a class="feature-card reveal" href="{{ url_for('weather') }}">
+        <span class="fc-icon">🌤</span>
+        <div class="fc-title">Live Weather</div>
+        <div class="fc-desc">Real-time conditions and travel advisories for any destination worldwide.</div>
+        <div class="fc-arrow">→</div>
+      </a>
+      <a class="feature-card reveal" href="{{ url_for('chatbot') }}">
+        <span class="fc-icon">🤖</span>
+        <div class="fc-title">AI Chatbot</div>
+        <div class="fc-desc">Ask anything — destinations, packing, budgets, safety. Instant expert travel answers.</div>
+        <div class="fc-arrow">→</div>
+      </a>
+      <a class="feature-card reveal" href="{{ url_for('plan_trip') if user else url_for('signup') }}">
+        <span class="fc-icon">🍽</span>
+        <div class="fc-title">Restaurants</div>
+        <div class="fc-desc">Curated top dining picks and local cuisine recommendations for every destination.</div>
+        <div class="fc-arrow">→</div>
+      </a>
+      <a class="feature-card reveal" href="{{ url_for('plan_trip') if user else url_for('signup') }}">
+        <span class="fc-icon">🏛</span>
+        <div class="fc-title">Tourist Spots</div>
+        <div class="fc-desc">Discover iconic and off-beat attractions with ratings and direct Google Maps links.</div>
+        <div class="fc-arrow">→</div>
+      </a>
+      <a class="feature-card reveal" href="{{ url_for('saved_trips') if user else url_for('signup') }}">
+        <span class="fc-icon">💾</span>
+        <div class="fc-title">Saved Trips</div>
+        <div class="fc-desc">Save and revisit your AI-generated itineraries anytime from your personal dashboard.</div>
+        <div class="fc-arrow">→</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- WHY SECTION -->
+<section class="why-section">
+  <div class="container">
+    <div class="why-grid">
+      <div class="why-content reveal">
+        <div class="sec-label">Why Hodophile</div>
+        <h2 class="sec-title">The Smarter Way<br>to <em>Wander</em></h2>
+        <p class="sec-sub">We don't just give you a list of places — we craft a complete journey experience tailored to your budget, style and season.</p>
+        <div class="why-list">
+          <div class="why-item"><span class="why-icon">✦</span><div><strong>AI-Generated Itineraries</strong><p>Powered by Google Gemini for rich, specific, day-wise plans</p></div></div>
+          <div class="why-item"><span class="why-icon">✦</span><div><strong>Real-Time Weather</strong><p>OpenWeatherMap integration for accurate travel timing</p></div></div>
+          <div class="why-item"><span class="why-icon">✦</span><div><strong>Smart Budget Planning</strong><p>Automatic breakdown of every rupee across all categories</p></div></div>
+          <div class="why-item"><span class="why-icon">✦</span><div><strong>Google Maps Integration</strong><p>One-click maps for every destination you explore</p></div></div>
+        </div>
+        <a class="btn btn-gold" href="{{ url_for('signup') if not user else url_for('plan_trip') }}">Start Planning Now ✦</a>
+      </div>
+      <div class="why-visual reveal">
+        <div class="why-card-stack">
+          <div class="wcard wcard1"><div class="wcard-icon">🌏</div><div>Your destination<br><strong>beautifully planned</strong></div></div>
+          <div class="wcard wcard2"><div class="wcard-icon">💰</div><div>Budget<br><strong>₹50,000 optimised</strong></div></div>
+          <div class="wcard wcard3"><div class="wcard-icon">⭐</div><div>AI Rating<br><strong>Perfect itinerary</strong></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+{% if not user %}
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-box reveal">
+      <div class="sec-label">Ready to Explore?</div>
+      <h2 class="cta-title">Your Next Adventure<br>Starts <em>Right Here</em></h2>
+      <p>Join thousands of travellers who plan smarter, travel better and remember forever with Hodophile.</p>
+      <div class="cta-btns">
+        <a class="btn btn-gold btn-lg" href="{{ url_for('signup') }}">✦ Create Free Account</a>
+        <a class="btn btn-ghost btn-lg" href="{{ url_for('login') }}">Already a member →</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Animated counter for stats
+document.querySelectorAll('.stat-num[data-target]').forEach(el => {
+  const target = parseInt(el.dataset.target);
+  let current = 0;
+  const step = Math.ceil(target / 80);
+  const timer = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = current.toLocaleString();
+    if (current >= target) clearInterval(timer);
+  }, 20);
+});
+</script>
+{% endblock %}

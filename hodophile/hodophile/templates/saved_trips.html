@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Saved Trips — Hodophile{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <div class="card reveal">
+    <h1 class="card-title">Saved Trips</h1>
+    <p class="card-sub">Your AI-generated itineraries, ready to revisit</p>
+    {% if trips %}
+      <div class="saved-trips-list">
+        {% for trip in trips %}
+        <div class="saved-card reveal">
+          <div class="saved-icon">🗺️</div>
+          <div class="saved-info">
+            <div class="saved-dest">{{ trip['destination'] }}</div>
+            <div class="saved-meta">
+              <span class="tag">{{ trip['days'] }} days</span>
+              <span class="tag">{{ trip['vibe'] }}</span>
+              <span class="tag">{{ trip['month'] }}</span>
+              <span class="tag">₹{{ "{:,.0f}".format(trip['budget']) }}</span>
+              <span class="tag">{{ trip['travelers'] }} traveler{{ 's' if trip['travelers'] != 1 }}</span>
+            </div>
+            <div class="saved-date">Saved on {{ trip['created_at'][:10] }}</div>
+          </div>
+          <div class="saved-actions">
+            <button class="btn btn-ghost btn-sm" onclick="viewItinerary({{ loop.index0 }})">View Plan →</button>
+            <form method="POST" action="{{ url_for('delete_trip', tid=trip['id']) }}" onsubmit="return confirm('Delete this trip?')" style="display:inline">
+              <button type="submit" class="btn btn-danger btn-sm">✕</button>
+            </form>
+          </div>
+        </div>
+        <!-- Collapsible itinerary -->
+        <div class="trip-itinerary" id="itinerary-{{ loop.index0 }}" style="display:none">
+          <div class="plan-content">{{ trip['itinerary'] }}</div>
+          <div class="itinerary-actions">
+            <a class="btn btn-ghost btn-sm map-link" href="https://www.google.com/maps/search/{{ trip['destination'].replace(' ', '+') }}" target="_blank">🗺 Maps</a>
+            <a class="btn btn-ghost btn-sm" href="{{ url_for('weather') }}?city={{ trip['destination'] }}">🌤 Weather</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">💾</div>
+        <div class="empty-title">No saved trips yet</div>
+        <div class="empty-sub">Generate an AI travel plan and save it here!</div>
+        <a class="btn btn-gold" href="{{ url_for('plan_trip') }}">✦ Plan a Trip</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+function viewItinerary(idx) {
+  const el = document.getElementById('itinerary-' + idx);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+{% endblock %}

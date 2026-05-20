@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block title %}{{ destination }} — AI Travel Plan | Hodophile{% endblock %}
+{% block content %}
+<div class="result-header">
+  <div class="container">
+    <h1 class="result-title">✦ {{ destination }}</h1>
+    <div class="result-meta">
+      <span class="tag">📅 {{ days }} Days</span>
+      <span class="tag">👥 {{ travelers }} Travelers</span>
+      <span class="tag">🎭 {{ vibe }}</span>
+      <span class="tag">🗓 {{ month }}</span>
+      <span class="tag">💰 ₹{{ "{:,.0f}".format(budget) }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="result-grid">
+  <!-- LEFT PANEL -->
+  <div class="result-left">
+
+    <!-- Budget Breakdown -->
+    <div class="mini-card">
+      <div class="mini-title">💰 Budget Breakdown</div>
+      {% for label, amount in budget_breakdown.items() %}
+      <div class="budget-row">
+        <span class="budget-label">{{ label }}</span>
+        <span class="budget-val">₹{{ "{:,.0f}".format(amount) }}</span>
+      </div>
+      <div class="budget-bar">
+        <div class="budget-fill" style="width:{% if label=='Stay' %}35{% elif label=='Food' %}25{% elif label=='Transport' %}20{% elif label=='Activities' %}15{% else %}5{% endif %}%"></div>
+      </div>
+      {% endfor %}
+      <div class="budget-row total-row">
+        <span class="budget-label">Total</span>
+        <span class="budget-val gold">₹{{ "{:,.0f}".format(budget) }}</span>
+      </div>
+    </div>
+
+    <!-- Place Images Gallery -->
+    {% if images %}
+    <div class="mini-card">
+      <div class="mini-title">🖼 {{ destination }} Gallery</div>
+      <div class="place-gallery">
+        {% for img in images %}
+        <div class="gallery-img-wrap">
+          <img src="{{ img }}" alt="{{ destination }}" loading="lazy" class="gallery-img">
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Hotels -->
+    <div class="mini-card">
+      <div class="mini-title">🏨 Suggested Hotels</div>
+      {% if hotels %}
+        {% for place in hotels[:4] %}
+        <div class="place-item">
+          <div class="place-ico">🏨</div>
+          <div>
+            <div class="place-name">{{ place.get('name', 'Hotel') }}</div>
+            <div class="place-meta">
+              {% if place.get('rating') %}★ {{ place['rating'] }}{% endif %}
+              {% if place.get('formatted_address') %} · {{ place['formatted_address'][:40] }}{% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="place-item"><div class="place-ico">🏨</div><div><div class="place-name">{{ destination }} Grand Hotel</div><div class="place-meta">★ 4.5 · Central location · Luxury stay</div></div></div>
+        <div class="place-item"><div class="place-ico">🏩</div><div><div class="place-name">{{ destination }} Boutique Inn</div><div class="place-meta">★ 4.2 · Heritage property · Great value</div></div></div>
+        <div class="place-item"><div class="place-ico">🏪</div><div><div class="place-name">{{ destination }} Resort & Spa</div><div class="place-meta">★ 4.7 · Pool · Scenic views</div></div></div>
+      {% endif %}
+    </div>
+
+    <!-- Restaurants -->
+    <div class="mini-card">
+      <div class="mini-title">🍽 Top Restaurants</div>
+      {% if restaurants %}
+        {% for place in restaurants[:4] %}
+        <div class="place-item">
+          <div class="place-ico">🍽</div>
+          <div>
+            <div class="place-name">{{ place.get('name', 'Restaurant') }}</div>
+            <div class="place-meta">{% if place.get('rating') %}★ {{ place['rating'] }}{% endif %} · Local favourite</div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="place-item"><div class="place-ico">🍽</div><div><div class="place-name">{{ destination }} Heritage Kitchen</div><div class="place-meta">★ 4.6 · Local cuisine · Authentic</div></div></div>
+        <div class="place-item"><div class="place-ico">🥘</div><div><div class="place-name">{{ destination }} Spice Garden</div><div class="place-meta">★ 4.3 · Multi-cuisine · Popular</div></div></div>
+        <div class="place-item"><div class="place-ico">☕</div><div><div class="place-name">{{ destination }} Riverside Café</div><div class="place-meta">★ 4.4 · Views · Casual dining</div></div></div>
+      {% endif %}
+    </div>
+
+    <!-- Attractions -->
+    <div class="mini-card">
+      <div class="mini-title">🏛 Tourist Attractions</div>
+      {% if attractions %}
+        {% for place in attractions[:4] %}
+        <div class="place-item">
+          <div class="place-ico">🏛</div>
+          <div>
+            <div class="place-name">{{ place.get('name', 'Attraction') }}</div>
+            <div class="place-meta">{% if place.get('rating') %}★ {{ place['rating'] }}{% endif %} · Must visit</div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="place-item"><div class="place-ico">🏛</div><div><div class="place-name">{{ destination }} Central Monument</div><div class="place-meta">★ 4.8 · Iconic · Must-visit</div></div></div>
+        <div class="place-item"><div class="place-ico">🌅</div><div><div class="place-name">{{ destination }} Viewpoint</div><div class="place-meta">★ 4.5 · Sunset · Photography</div></div></div>
+        <div class="place-item"><div class="place-ico">🌿</div><div><div class="place-name">{{ destination }} Nature Reserve</div><div class="place-meta">★ 4.3 · Wildlife · Trekking</div></div></div>
+      {% endif %}
+    </div>
+
+    <!-- Packing List -->
+    <div class="mini-card">
+      <div class="mini-title">🎒 Packing Essentials for {{ month }}</div>
+      <div class="packing-tags">
+        {% for item in packing %}
+          <span class="pack-tag">{{ item }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div class="mini-card map-card">
+      <div class="mini-title">🗺 Navigate {{ destination }}</div>
+      <a href="{{ map_url }}" target="_blank" rel="noopener noreferrer" class="map-btn">
+        🗺 Open {{ destination }} in Google Maps
+      </a>
+    </div>
+
+  </div><!-- end left -->
+
+  <!-- RIGHT PANEL -->
+  <div class="result-right">
+    <div class="plan-box">
+      <div class="plan-header">
+        <div class="mini-title">✦ AI Travel Plan — {{ destination }}</div>
+        <div class="plan-gen-badge">Generated by AI ✦</div>
+      </div>
+      <div class="plan-content" id="planContent">{{ itinerary }}</div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="result-actions">
+      <button class="btn btn-gold btn-sm" onclick="saveTrip()" id="saveBtn">💾 Save Trip</button>
+      <a class="btn btn-ghost btn-sm map-link" href="{{ map_url }}" target="_blank" rel="noopener noreferrer">🗺 Maps</a>
+      <a class="btn btn-ghost btn-sm" href="{{ url_for('chatbot') }}">💬 Ask AI</a>
+      <a class="btn btn-ghost btn-sm" href="{{ url_for('weather') }}?city={{ destination }}">🌤 Weather</a>
+      <a class="btn btn-ghost btn-sm" href="{{ url_for('memories') }}">📸 Memories</a>
+      <button class="btn btn-ghost btn-sm" onclick="sharePlan()">🔗 Share</button>
+      <a class="btn btn-neon btn-sm" href="{{ url_for('plan_trip') }}">✦ New Plan</a>
+    </div>
+  </div>
+
+</div><!-- end result-grid -->
+
+<!-- Hidden data for JS save -->
+<script type="application/json" id="tripData">
+{
+  "destination": {{ destination | tojson }},
+  "days": {{ days }},
+  "budget": {{ budget }},
+  "travelers": {{ travelers }},
+  "vibe": {{ vibe | tojson }},
+  "month": {{ month | tojson }},
+  "itinerary": {{ itinerary | tojson }}
+}
+</script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+async function saveTrip() {
+  const data = JSON.parse(document.getElementById('tripData').textContent);
+  const btn = document.getElementById('saveBtn');
+  btn.textContent = '⏳ Saving...'; btn.disabled = true;
+  try {
+    const resp = await fetch('/save-trip', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await resp.json();
+    btn.textContent = '✓ Saved!'; btn.classList.add('btn-success');
+    setTimeout(() => { btn.textContent = '💾 Save Trip'; btn.disabled = false; btn.classList.remove('btn-success'); }, 3000);
+  } catch(e) {
+    btn.textContent = '✕ Error'; btn.disabled = false;
+    setTimeout(() => { btn.textContent = '💾 Save Trip'; }, 2000);
+  }
+}
+function sharePlan() {
+  const text = `✦ My AI travel plan to {{ destination }} — {{ days }} days of {{ vibe }} travel! Planned with Hodophile AI 🌏`;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => alert('Plan copied to clipboard! Share away 🔗'));
+  } else {
+    alert(text);
+  }
+}
+</script>
+{% endblock %}

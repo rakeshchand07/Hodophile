@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Travel Memories — Hodophile{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <div class="card reveal">
+    <h1 class="card-title">Travel Memories</h1>
+    <p class="card-sub">Your journeys, beautifully preserved</p>
+    <form method="POST" action="{{ url_for('upload_memory') }}" enctype="multipart/form-data" id="uploadForm">
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('memFile').click()">
+        <div class="upload-icon">📸</div>
+        <div class="upload-title">Click to upload photos</div>
+        <div class="upload-sub">or drag and drop here<br><small>JPG, PNG, GIF, WebP · Multiple files · Max 10MB each</small></div>
+        <input type="file" id="memFile" name="file" accept="image/*" multiple style="display:none" onchange="handleFileSelect(event)">
+      </div>
+      <div class="form-group">
+        <label for="caption">Caption (optional)</label>
+        <input type="text" id="caption" name="caption" placeholder="e.g. Sunset at Puri Beach, January 2024">
+      </div>
+      <button type="submit" class="btn btn-gold" id="uploadBtn" style="display:none">📤 Upload Selected Photos</button>
+    </form>
+  </div>
+
+  <div class="card reveal">
+    <div class="memories-header">
+      <h2 class="card-title">My Gallery</h2>
+      <span class="mem-count">{{ memories|length }} photo{{ 's' if memories|length != 1 }}</span>
+    </div>
+    {% if memories %}
+      <div class="memories-grid">
+        {% for mem in memories %}
+        <div class="memory-card">
+          <img src="{{ url_for('memory_image', filename=mem['file_name']) }}" alt="{{ mem['caption'] or 'Travel memory' }}" loading="lazy" onclick="openLightbox('{{ url_for('memory_image', filename=mem['file_name']) }}', '{{ mem['caption'] or '' }}')">
+          {% if mem['caption'] %}
+            <div class="memory-caption">{{ mem['caption'] }}</div>
+          {% endif %}
+          <div class="memory-overlay">
+            <div class="memory-date">{{ mem['created_at'][:10] }}</div>
+            <form method="POST" action="{{ url_for('delete_memory', mid=mem['id']) }}" onsubmit="return confirm('Delete this memory?')" style="display:inline">
+              <button type="submit" class="mem-del-btn" title="Delete memory">✕</button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">📷</div>
+        <div class="empty-title">No memories yet</div>
+        <div class="empty-sub">Upload your first travel photo to begin your gallery!</div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-inner" onclick="event.stopPropagation()">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <img id="lightboxImg" src="" alt="">
+    <div id="lightboxCaption" class="lightbox-caption"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Drag and drop
+const zone = document.getElementById('uploadZone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragging'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('dragging'));
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('dragging');
+  document.getElementById('memFile').files = e.dataTransfer.files;
+  handleFileSelect({ target: { files: e.dataTransfer.files } });
+});
+
+function handleFileSelect(e) {
+  const files = e.target.files;
+  if (files.length > 0) {
+    const btn = document.getElementById('uploadBtn');
+    btn.style.display = 'block';
+    btn.textContent = `📤 Upload ${files.length} Photo${files.length > 1 ? 's' : ''}`;
+    document.querySelector('.upload-title').textContent = `${files.length} file${files.length > 1 ? 's' : ''} selected`;
+  }
+}
+
+function openLightbox(src, caption) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightboxCaption').textContent = caption;
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+{% endblock %}

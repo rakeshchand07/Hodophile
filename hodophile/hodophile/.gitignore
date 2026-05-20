@@ -1,0 +1,26 @@
+# Environment
+.env
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Database
+database.db
+
+# Uploads
+uploads/memories/*
+uploads/profiles/*
+!uploads/memories/.gitkeep
+!uploads/profiles/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+
+# IDEs
+.vscode/
+.idea/
