@@ -13,5 +13,5 @@
 - HTML
 - CSS
 - JavaScript
-- SQLite
+- SQLlite
 - Gemini AI API
