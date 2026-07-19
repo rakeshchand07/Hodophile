@@ -15,3 +15,4 @@
 - JavaScript
 - SQLlite
 - Gemini AI API
+Project documentation updated.
